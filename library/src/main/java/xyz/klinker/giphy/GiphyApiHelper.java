@@ -40,14 +40,14 @@ import java.util.Scanner;
  * new GiphyHelper(apiKey, 1024 * 1024)
  * .search(this);
  */
-class GiphyHelper {
+class GiphyApiHelper {
 
     public static final int NO_SIZE_LIMIT = -1;
 
     private String apiKey;
     private long maxSize;
 
-    GiphyHelper(String apiKey, long maxSize) {
+    GiphyApiHelper(String apiKey, long maxSize) {
         this.apiKey = apiKey;
         this.maxSize = maxSize;
     }

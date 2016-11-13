@@ -17,12 +17,7 @@
 package xyz.klinker.giphy;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -32,16 +27,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.Toast;
+import android.view.inputmethod.InputMethodManager;
 
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
 
 public class GiphyActivity extends AppCompatActivity {
@@ -49,13 +38,13 @@ public class GiphyActivity extends AppCompatActivity {
     public static final String EXTRA_API_KEY = "api_key";
     public static final String EXTRA_SIZE_LIMIT = "size_limit";
 
-    private GiphyHelper helper;
+    private GiphyApiHelper helper;
 
     private RecyclerView recycler;
+    private GiphyAdapter adapter;
+
     private View progressSpinner;
     private MaterialSearchView searchView;
-
-    private GifSearchAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,14 +55,12 @@ public class GiphyActivity extends AppCompatActivity {
             throw new RuntimeException("EXTRA_API_KEY is required!");
         }
 
-        helper = new GiphyHelper(getIntent().getExtras().getString(EXTRA_API_KEY),
-                getIntent().getExtras().getLong(EXTRA_SIZE_LIMIT, GiphyHelper.NO_SIZE_LIMIT));
+        helper = new GiphyApiHelper(getIntent().getExtras().getString(EXTRA_API_KEY),
+                getIntent().getExtras().getLong(EXTRA_SIZE_LIMIT, GiphyApiHelper.NO_SIZE_LIMIT));
 
         try {
             getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        } catch (Exception e) {
-
-        }
+        } catch (Exception e) { }
 
         setContentView(R.layout.giffy_search_activity);
 
@@ -109,20 +96,12 @@ public class GiphyActivity extends AppCompatActivity {
             }
         });
 
-        recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                adapter.releaseVideo();
-            }
-        });
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 loadTrending();
             }
-        }, 750);
+        }, 500);
     }
 
     @Override
@@ -133,9 +112,9 @@ public class GiphyActivity extends AppCompatActivity {
 
     private void loadTrending() {
         progressSpinner.setVisibility(View.VISIBLE);
-        helper.trends(new GiphyHelper.Callback() {
+        helper.trends(new GiphyApiHelper.Callback() {
             @Override
-            public void onResponse(List<GiphyHelper.Gif> gifs) {
+            public void onResponse(List<GiphyApiHelper.Gif> gifs) {
                 setAdapter(gifs);
             }
         });
@@ -143,123 +122,27 @@ public class GiphyActivity extends AppCompatActivity {
 
     private void executeQuery(String query) {
         progressSpinner.setVisibility(View.VISIBLE);
+        dismissKeyboard();
 
-        helper.search(query, new GiphyHelper.Callback() {
+        helper.search(query, new GiphyApiHelper.Callback() {
             @Override
-            public void onResponse(List<GiphyHelper.Gif> gifs) {
+            public void onResponse(List<GiphyApiHelper.Gif> gifs) {
                 setAdapter(gifs);
             }
         });
     }
 
-    private void setAdapter(List<GiphyHelper.Gif> gifs) {
+    private void setAdapter(List<GiphyApiHelper.Gif> gifs) {
         progressSpinner.setVisibility(View.GONE);
-
-        if (adapter != null) {
-            adapter.releaseVideo();
-        }
-
-        adapter = new GifSearchAdapter(gifs, new GifSearchAdapter.Callback() {
+        adapter = new GiphyAdapter(gifs, new GiphyAdapter.Callback() {
             @Override
-            public void onClick(final GiphyHelper.Gif item) {
-                new DownloadVideo(GiphyActivity.this, item.gifUrl).execute();
+            public void onClick(final GiphyApiHelper.Gif item) {
+                new DownloadGif(GiphyActivity.this, item.gifUrl).execute();
             }
         });
 
         recycler.setLayoutManager(new LinearLayoutManager(GiphyActivity.this));
         recycler.setAdapter(adapter);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        if (adapter != null) {
-            adapter.releaseVideo();
-        }
-    }
-
-    private static class DownloadVideo extends AsyncTask<Void, Void, Uri> {
-
-        Activity activity;
-        String video;
-        ProgressDialog dialog;
-
-        DownloadVideo(Activity activity, String videoLink) {
-            this.activity = activity;
-            this.video = videoLink;
-        }
-
-        @Override
-        public void onPreExecute() {
-            dialog = new ProgressDialog(activity);
-            dialog.setIndeterminate(true);
-            dialog.setCancelable(false);
-            dialog.setMessage(activity.getString(R.string.downloading));
-            dialog.show();
-        }
-
-        @Override
-        protected Uri doInBackground(Void... arg0) {
-            try {
-                return saveGiffy(activity, video);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Uri downloadedTo) {
-            if (downloadedTo != null) {
-                activity.setResult(Activity.RESULT_OK, new Intent().setData(downloadedTo));
-                activity.finish();
-
-                try {
-                    dialog.dismiss();
-                } catch (Exception e) {
-                }
-            } else {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    Toast.makeText(activity, R.string.error_downloading_gif,
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(activity, R.string.error_downloading_gif_permission,
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-
-        private Uri saveGiffy(Context context, String videoUrl) throws Exception {
-            final File file = new File(context.getFilesDir().getPath(),
-                    "giphy_" + System.currentTimeMillis() + ".gif");
-            if (!file.createNewFile()) {
-                // file already exists
-            }
-
-            URL url = new URL(videoUrl);
-            URLConnection connection = url.openConnection();
-            connection.setReadTimeout(5000);
-            connection.setConnectTimeout(30000);
-
-            InputStream is = connection.getInputStream();
-            BufferedInputStream inStream = new BufferedInputStream(is, 1024 * 5);
-            FileOutputStream outStream = new FileOutputStream(file);
-
-            byte[] buffer = new byte[1024 * 5];
-            int len;
-            while ((len = inStream.read(buffer)) != -1) {
-                outStream.write(buffer, 0, len);
-            }
-
-            outStream.flush();
-            outStream.close();
-            inStream.close();
-            is.close();
-
-            return Uri.fromFile(file);
-        }
-
     }
 
     @Override
@@ -272,4 +155,8 @@ public class GiphyActivity extends AppCompatActivity {
         return true;
     }
 
+    private void dismissKeyboard() {
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+    }
 }

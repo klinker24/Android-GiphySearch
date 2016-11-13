@@ -1,12 +1,14 @@
 # Giphy Android Search Library
 
+![preview1](artwork/preview.png) ![preview2](artwork/preview2.png)
+
 This library is a wrapper Giphy's wonderful [API](https://github.com/Giphy/GiphyAPI) and allows you to easily include animated GIFs in your projects.
 
-The library will start by showing the trending GIFs thn allow the user to search through Giphy's vast amount of animations.
+The library will start by showing the trending GIFs then allow the user to search through Giphy's vast amount of animations.
 
-GIFs are automatically played when the user scrolls through them, then, when the user clicks a GIF, it will be downloaded and the resulting `file://` URI will be returned to your activity.
+GIFs are automatically played when the user scrolls through them, then, when the user clicks a GIF, it will be downloaded and the resulting `file://` URI will be returned to your `Activity`.
 
-The library is extremely easy to implement, as shown below. Enjoy all the animations!
+The library is extremely easy to implement, as shown below. Enjoy all the GIFs!
 
 ## Installation
 
@@ -51,12 +53,6 @@ public void onActivityResult(int requestCode, int resultCode, Intent data) {
 Giphy makes a public BETA API key available for any one to use during testing: `dc6zaTOxFJmzC`.
 
 They say that this BETA key is rate limited, so I recommend [applying](http://api.giphy.com/submit) for a production key.
-
-### Notes about the library
-
-GIFs are always automatically played when scrolling the list, there isn't and won't be an option for this. The GIF file format, in general is very wasteful, for this reason, the GIFs that are being played on the list are not the actual `.gif` files. Giphy provides a `.mp4` version of all of their GIFs. These are much lighter weight, load quicker, and have better quality.
-
-When a user does download the GIF to your app, it will download the `.gif` and not the `.mp4` video. To consume these GIFs within your app, I highly recommend the amazing [Glide](https://github.com/bumptech/glide) library. Glide is used in almost all of my applications. One thing to note about the library, when using it for animated GIFs, use `.diskCacheStrategy(DiskCacheStrategy.SOURCE)` to ensure load times are low.
 
 ## License
 

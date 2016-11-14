@@ -63,8 +63,8 @@ public class Giphy {
             return giphy;
         }
 
-        public void start(int requestCode) {
-            build().start(requestCode);
+        public void start() {
+            build().start(REQUEST_GIPHY);
         }
     }
 

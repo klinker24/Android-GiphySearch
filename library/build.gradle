@@ -48,7 +48,6 @@ dependencies {
     compile 'com.klinkerapps:simple_videoview:1.2.1'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
-    compile 'com.afollestad:sectioned-recyclerview:0.2.3'
 }
 
 apply from: 'https://raw.github.com/klinker24/gradle-mvn-push/master/gradle-mvn-push.gradle'

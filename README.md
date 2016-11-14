@@ -16,7 +16,7 @@ Include the following in your gradle script:
 
 ```groovy
 dependencies {
-    compile 'com.klinkerapps:giphy:1.0.0'
+    compile 'com.klinkerapps:giphy:1.0.1'
 }
 ```
 

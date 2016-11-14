@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 new Giphy.Builder(MainActivity.this, "dc6zaTOxFJmzC")       // their public BETA key
                         .maxFileSize(5 * 1024 * 1024)                       // 5 mb
-                        .start(Giphy.REQUEST_GIPHY);
+                        .start();
             }
         });
     }

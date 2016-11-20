@@ -36,13 +36,17 @@ import java.util.List;
 public class GiphyActivity extends AppCompatActivity {
 
     public static final String EXTRA_API_KEY = "api_key";
+    public static final String EXTRA_GIF_LIMIT = "gif_limit";
+    public static final String EXTRA_PREVIEW_SIZE = "preview_size";
     public static final String EXTRA_SIZE_LIMIT = "size_limit";
+    public static final String EXTRA_SAVE_LOCATION = "save_location";
+
+    private String saveLocation;
+    private boolean queried = false;
 
     private GiphyApiHelper helper;
-
     private RecyclerView recycler;
     private GiphyAdapter adapter;
-
     private View progressSpinner;
     private MaterialSearchView searchView;
 
@@ -56,7 +60,11 @@ public class GiphyActivity extends AppCompatActivity {
         }
 
         helper = new GiphyApiHelper(getIntent().getExtras().getString(EXTRA_API_KEY),
+                getIntent().getExtras().getInt(EXTRA_GIF_LIMIT, GiphyApiHelper.NO_SIZE_LIMIT),
+                getIntent().getExtras().getInt(EXTRA_PREVIEW_SIZE, Giphy.PREVIEW_SMALL),
                 getIntent().getExtras().getLong(EXTRA_SIZE_LIMIT, GiphyApiHelper.NO_SIZE_LIMIT));
+
+        saveLocation = getIntent().getExtras().getString(EXTRA_SAVE_LOCATION, null);
 
         try {
             getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -91,8 +99,24 @@ public class GiphyActivity extends AppCompatActivity {
 
             @Override
             public void onSearchViewClosed() {
-                setResult(Activity.RESULT_CANCELED);
-                finish();
+                if (queried)
+                {
+                    queried = false;
+                    searchView.setQuery("", false);
+                    loadTrending();
+                    //OnSearchViewClosed forces SearchView to close. Show SearchView again. 
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            searchView.showSearch(false);
+                        }
+                    }, 25);
+                }
+                else
+                {
+                    setResult(Activity.RESULT_CANCELED);
+                    finish();
+                }
             }
         });
 
@@ -101,13 +125,38 @@ public class GiphyActivity extends AppCompatActivity {
             public void run() {
                 loadTrending();
             }
-        }, 500);
+        }, 250);
     }
 
     @Override
     public void onStart() {
         super.onStart();
         searchView.showSearch(false);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (queried)
+        {
+            queried = false;
+            searchView.setQuery("", false);
+            loadTrending();
+        }
+        else
+        {
+            setResult(Activity.RESULT_CANCELED);
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
+
+        return true;
     }
 
     private void loadTrending() {
@@ -121,6 +170,7 @@ public class GiphyActivity extends AppCompatActivity {
     }
 
     private void executeQuery(String query) {
+        queried = true;
         progressSpinner.setVisibility(View.VISIBLE);
         dismissKeyboard();
 
@@ -137,22 +187,12 @@ public class GiphyActivity extends AppCompatActivity {
         adapter = new GiphyAdapter(gifs, new GiphyAdapter.Callback() {
             @Override
             public void onClick(final GiphyApiHelper.Gif item) {
-                new DownloadGif(GiphyActivity.this, item.gifUrl).execute();
+                new DownloadGif(GiphyActivity.this, item.gifUrl, item.name, saveLocation).execute();
             }
         });
 
         recycler.setLayoutManager(new LinearLayoutManager(GiphyActivity.this));
         recycler.setAdapter(adapter);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-
-        MenuItem item = menu.findItem(R.id.action_search);
-        searchView.setMenuItem(item);
-
-        return true;
     }
 
     private void dismissKeyboard() {

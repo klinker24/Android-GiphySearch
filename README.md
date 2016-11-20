@@ -12,11 +12,23 @@ The library is extremely easy to implement, as shown below. Enjoy all the GIFs!
 
 ## Installation
 
-Include the following in your gradle script:
+In your project's root `build.gradle` (not your module's `build.gradle`):
+
+```groovy
+allprojects {
+    repositories {
+        ...
+        jcenter()
+    }
+}
+```
+
+To include it in your project, add this to your module's `build.gradle` file:
 
 ```groovy
 dependencies {
-    compile 'com.klinkerapps:giphy:1.0.2'
+	...
+	compile 'com.klinkerapps:giphy:1.0.3'
 }
 ```
 

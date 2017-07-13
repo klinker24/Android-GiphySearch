@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
@@ -65,11 +66,10 @@ public class GiphyAdapter extends RecyclerView.Adapter<GiphyAdapter.GifViewHolde
         }
 
         private void bind(final GiphyApiHelper.Gif gif) {
-            Glide.with(itemView.getContext())
-                    .load(Uri.parse(gif.gifUrl)).asGif().centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .into(gifIv);
+            RequestOptions requestOptions = new RequestOptions()
+                    .centerCrop();
 
+            Glide.with(itemView.getContext()).asGif().load(Uri.parse(gif.gifUrl)).apply(requestOptions).into(gifIv);
             gifIv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

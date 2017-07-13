@@ -60,11 +60,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Giphy.REQUEST_GIPHY) {
-            if (resultCode == Activity.RESULT_OK) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
                 Uri gif = data.getData();
-                Glide.with(this).load(gif)
-                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                        .into(imageView);
+                Glide.with(this).load(gif).into(imageView);
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);

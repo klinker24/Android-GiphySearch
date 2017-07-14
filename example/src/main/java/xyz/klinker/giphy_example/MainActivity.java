@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 new Giphy.Builder(MainActivity.this, "dc6zaTOxFJmzC")       // their public BETA key
+                        .setPreviewSize(Giphy.PREVIEW_LARGE)
                         .maxFileSize(5 * 1024 * 1024)                       // 5 mb
                         .start();
             }

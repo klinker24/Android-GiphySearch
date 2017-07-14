@@ -48,35 +48,37 @@ class GiphyApiHelper {
 
     private String apiKey;
     private int limit;
+    private int previewSize;
     private long maxSize;
 
-    GiphyApiHelper(String apiKey, int limit, long maxSize) {
+    GiphyApiHelper(String apiKey, int limit, int previewSize, long maxSize) {
         this.apiKey = apiKey;
         this.limit = limit;
+        this.previewSize = previewSize;
         this.maxSize = maxSize;
     }
 
-    private static final String[] SIZE_OPTIONS = new String[]{
-            "original", "downsized_medium", "fixed_height", "fixed_width", "fixed_height_small",
-            /*"fixed_width_small",*/ "downsized_large", "downsized_medium", "downsized"
-    };
+    private static final String[] PREVIEW_SIZE = new String[]{"fixed_width_downsampled", "fixed_width", "downsized"};
+
+    private static final String[] SIZE_OPTIONS = new String[]{"original", "downsized_large", "downsized_medium",
+            "downsized", "downsized_small", "fixed_height", "fixed_width", "fixed_height_small", "fixed_width_small"};
 
     interface Callback {
         void onResponse(List<Gif> gifs);
     }
 
     void search(String query, Callback callback) {
-        new SearchGiffy(apiKey, limit, maxSize, query, callback).execute();
+        new SearchGiffy(apiKey, limit, previewSize, maxSize, query, callback).execute();
     }
 
     void trends(Callback callback) {
-        new GiffyTrends(apiKey, maxSize, callback).execute();
+        new GiffyTrends(apiKey, previewSize, maxSize, callback).execute();
     }
 
     private static class GiffyTrends extends SearchGiffy {
 
-        GiffyTrends(String apiKey, long maxSize, Callback callback) {
-            super(apiKey, -1, maxSize, null, callback);
+        GiffyTrends(String apiKey, int previewSize, long maxSize, Callback callback) {
+            super(apiKey, -1, previewSize, maxSize, null, callback);
         }
 
         @Override
@@ -89,13 +91,15 @@ class GiphyApiHelper {
 
         private String apiKey;
         private int limit;
+        private int previewSize;
         private long maxSize;
         private String query;
         private Callback callback;
 
-        SearchGiffy(String apiKey, int limit, long maxSize, String query, Callback callback) {
+        SearchGiffy(String apiKey, int limit, int previewSize, long maxSize, String query, Callback callback) {
             this.apiKey = apiKey;
             this.limit = limit;
+            this.previewSize = previewSize;
             this.maxSize = maxSize;
             this.query = query;
             this.callback = callback;
@@ -135,7 +139,7 @@ class GiphyApiHelper {
                     Log.d("GIF Name", name);
                     JSONObject images = gif.getJSONObject("images");
                     JSONObject previewImage = images.getJSONObject("downsized_still");
-                    JSONObject previewGif = images.getJSONObject("fixed_width_downsampled");
+                    JSONObject previewGif = images.getJSONObject(PREVIEW_SIZE[previewSize]);
                     JSONObject originalSize = images.getJSONObject("original");
                     JSONObject downsized = null;
 

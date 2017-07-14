@@ -29,10 +29,14 @@ import android.content.Intent;
 public class Giphy {
 
 	public static final int REQUEST_GIPHY = 10012;
+    public static final int PREVIEW_SMALL = 0;
+    public static final int PREVIEW_MEDIUM = 1;
+    public static final int PREVIEW_LARGE = 2;
 
     private Activity activity;
     private String apiKey;
     private int limit;
+    private int previewSize;
     private long maxFileSize;
 
     private Giphy(Activity activity, String apiKey) {
@@ -44,6 +48,7 @@ public class Giphy {
         Intent intent = new Intent(activity, GiphyActivity.class);
         intent.putExtra(GiphyActivity.EXTRA_API_KEY, apiKey);
         intent.putExtra(GiphyActivity.EXTRA_GIF_LIMIT, limit);
+        intent.putExtra(GiphyActivity.EXTRA_PREVIEW_SIZE, previewSize);
         intent.putExtra(GiphyActivity.EXTRA_SIZE_LIMIT, maxFileSize);
         activity.startActivityForResult(intent, requestCode);
     }
@@ -63,6 +68,12 @@ public class Giphy {
 
         public Giphy.Builder setQueryLimit(int limit) {
             giphy.limit = limit;
+            return this;
+        }
+
+        public Giphy.Builder setPreviewSize(int previewSize)
+        {
+            giphy.previewSize = previewSize;
             return this;
         }
 

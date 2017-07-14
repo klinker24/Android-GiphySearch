@@ -16,6 +16,8 @@
 
 package xyz.klinker.giphy;
 
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -132,11 +134,12 @@ class GiphyApiHelper {
                     String name = gif.getString("slug");
                     Log.d("GIF Name", name);
                     JSONObject images = gif.getJSONObject("images");
-                    JSONObject originalStill = images.getJSONObject("original_still");
+                    JSONObject previewImage = images.getJSONObject("downsized_still");
+                    JSONObject previewGif = images.getJSONObject("fixed_width_downsampled");
                     JSONObject originalSize = images.getJSONObject("original");
                     JSONObject downsized = null;
 
-                    // get the highest quality that twitter can post (5 mb)
+                    // Return the highest quality GIF under MaxSizeLimit.
                     for (String size : SIZE_OPTIONS) {
                         downsized = images.getJSONObject(size);
                         Log.v("giphy", size + ": " + downsized.getString("size") + " bytes");
@@ -152,7 +155,8 @@ class GiphyApiHelper {
                     if (downsized != null) {
                         gifList.add(
                                 new Gif(name,
-                                        originalStill.getString("url"),
+                                        previewImage.getString("url"),
+                                        previewGif.getString("url"),
                                         downsized.getString("url"),
                                         originalSize.getString("mp4"))
                         );
@@ -185,18 +189,47 @@ class GiphyApiHelper {
     static class Gif {
         String name;
         String previewImage;
+        String previewGif;
         String gifUrl;
         String mp4Url;
+        Drawable previewDrawable;
+        boolean previewDownloaded = false;
+        boolean gifDownloaded = false;
 
-        Gif(String name, String previewImage, String gifUrl, String mp4Url) {
+        Gif(String name, String previewImage, String previewGif, String gifUrl, String mp4Url) {
             try {
                 this.name = URLDecoder.decode(name, "UTF-8");
                 this.previewImage = URLDecoder.decode(previewImage, "UTF-8");
+                this.previewGif = URLDecoder.decode(previewGif, "UTF-8");
                 this.gifUrl = URLDecoder.decode(gifUrl, "UTF-8");
                 this.mp4Url = URLDecoder.decode(mp4Url, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+        }
+
+        public Drawable getPreviewDrawable() {
+            return previewDrawable;
+        }
+
+        public void setPreviewDrawable(Drawable previewDrawable) {
+            this.previewDrawable = previewDrawable;
+        }
+
+        public boolean getPreviewDownloaded() {
+            return previewDownloaded;
+        }
+
+        public void setPreviewDownloaded(boolean previewDownloaded) {
+            this.previewDownloaded = previewDownloaded;
+        }
+
+        public boolean getGifDownloaded() {
+            return gifDownloaded;
+        }
+
+        public void setGifDownloaded(boolean gifDownloaded) {
+            this.gifDownloaded = gifDownloaded;
         }
     }
 }

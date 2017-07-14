@@ -18,7 +18,7 @@
     android:layout_width="match_parent"
     android:layout_height="272dp"
     android:layout_margin="4dp"
-    android:background="#20000000" >
+    android:background="#FFFFFF" >
 
     <ImageView
         android:id="@+id/gif"
@@ -26,4 +26,9 @@
         android:layout_height="match_parent"
         android:layout_gravity="center" />
 
+    <ImageView
+        android:id="@+id/gifpreview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
 </FrameLayout>

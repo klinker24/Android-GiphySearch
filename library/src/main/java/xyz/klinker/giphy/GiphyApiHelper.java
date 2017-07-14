@@ -45,10 +45,12 @@ class GiphyApiHelper {
     public static final int NO_SIZE_LIMIT = -1;
 
     private String apiKey;
+    private int limit;
     private long maxSize;
 
-    GiphyApiHelper(String apiKey, long maxSize) {
+    GiphyApiHelper(String apiKey, int limit, long maxSize) {
         this.apiKey = apiKey;
+        this.limit = limit;
         this.maxSize = maxSize;
     }
 
@@ -62,7 +64,7 @@ class GiphyApiHelper {
     }
 
     void search(String query, Callback callback) {
-        new SearchGiffy(apiKey, maxSize, query, callback).execute();
+        new SearchGiffy(apiKey, limit, maxSize, query, callback).execute();
     }
 
     void trends(Callback callback) {
@@ -72,7 +74,7 @@ class GiphyApiHelper {
     private static class GiffyTrends extends SearchGiffy {
 
         GiffyTrends(String apiKey, long maxSize, Callback callback) {
-            super(apiKey, maxSize, null, callback);
+            super(apiKey, -1, maxSize, null, callback);
         }
 
         @Override
@@ -84,12 +86,14 @@ class GiphyApiHelper {
     private static class SearchGiffy extends AsyncTask<Void, Void, List<Gif>> {
 
         private String apiKey;
+        private int limit;
         private long maxSize;
         private String query;
         private Callback callback;
 
-        SearchGiffy(String apiKey, long maxSize, String query, Callback callback) {
+        SearchGiffy(String apiKey, int limit, long maxSize, String query, Callback callback) {
             this.apiKey = apiKey;
+            this.limit = limit;
             this.maxSize = maxSize;
             this.query = query;
             this.callback = callback;
@@ -125,6 +129,8 @@ class GiphyApiHelper {
 
                 for (int i = 0; i < data.length(); i++) {
                     JSONObject gif = data.getJSONObject(i);
+                    String name = gif.getString("slug");
+                    Log.d("GIF Name", name);
                     JSONObject images = gif.getJSONObject("images");
                     JSONObject originalStill = images.getJSONObject("original_still");
                     JSONObject originalSize = images.getJSONObject("original");
@@ -145,7 +151,8 @@ class GiphyApiHelper {
 
                     if (downsized != null) {
                         gifList.add(
-                                new Gif(originalStill.getString("url"),
+                                new Gif(name,
+                                        originalStill.getString("url"),
                                         downsized.getString("url"),
                                         originalSize.getString("mp4"))
                         );
@@ -167,10 +174,7 @@ class GiphyApiHelper {
         }
 
         protected String buildSearchUrl(String query) throws UnsupportedEncodingException {
-            return "http://api.giphy.com/v1/gifs/search?" +
-                    "q=" + URLEncoder.encode(query, "UTF-8") + "&" +
-                    "limit=80&" +
-                    "api_key=" + apiKey;
+            return "http://api.giphy.com/v1/gifs/search?q=" + URLEncoder.encode(query, "UTF-8") + "&limit=" + limit + "&api_key=" + apiKey;
         }
 
         private String getResponseText(InputStream inStream) {
@@ -179,15 +183,20 @@ class GiphyApiHelper {
     }
 
     static class Gif {
+        String name;
         String previewImage;
         String gifUrl;
         String mp4Url;
 
-        Gif(String previewImage, String gifUrl, String mp4Url) {
-            this.previewImage = URLDecoder.decode(previewImage);
-            this.gifUrl = URLDecoder.decode(gifUrl);
-            this.mp4Url = URLDecoder.decode(mp4Url);
+        Gif(String name, String previewImage, String gifUrl, String mp4Url) {
+            try {
+                this.name = URLDecoder.decode(name, "UTF-8");
+                this.previewImage = URLDecoder.decode(previewImage, "UTF-8");
+                this.gifUrl = URLDecoder.decode(gifUrl, "UTF-8");
+                this.mp4Url = URLDecoder.decode(mp4Url, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
     }
-
 }

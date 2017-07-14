@@ -32,6 +32,7 @@ public class Giphy {
 
     private Activity activity;
     private String apiKey;
+    private int limit;
     private long maxFileSize;
 
     private Giphy(Activity activity, String apiKey) {
@@ -42,6 +43,7 @@ public class Giphy {
     public void start(int requestCode) {
         Intent intent = new Intent(activity, GiphyActivity.class);
         intent.putExtra(GiphyActivity.EXTRA_API_KEY, apiKey);
+        intent.putExtra(GiphyActivity.EXTRA_GIF_LIMIT, limit);
         intent.putExtra(GiphyActivity.EXTRA_SIZE_LIMIT, maxFileSize);
         activity.startActivityForResult(intent, requestCode);
     }
@@ -56,6 +58,11 @@ public class Giphy {
 
         public Giphy.Builder maxFileSize(long maxFileSize) {
             giphy.maxFileSize = maxFileSize;
+            return this;
+        }
+
+        public Giphy.Builder setQueryLimit(int limit) {
+            giphy.limit = limit;
             return this;
         }
 

@@ -36,6 +36,7 @@ import java.util.List;
 public class GiphyActivity extends AppCompatActivity {
 
     public static final String EXTRA_API_KEY = "api_key";
+    public static final String EXTRA_GIF_LIMIT = "gif_limit";
     public static final String EXTRA_SIZE_LIMIT = "size_limit";
 
     private GiphyApiHelper helper;
@@ -56,6 +57,7 @@ public class GiphyActivity extends AppCompatActivity {
         }
 
         helper = new GiphyApiHelper(getIntent().getExtras().getString(EXTRA_API_KEY),
+                getIntent().getExtras().getInt(EXTRA_GIF_LIMIT, GiphyApiHelper.NO_SIZE_LIMIT),
                 getIntent().getExtras().getLong(EXTRA_SIZE_LIMIT, GiphyApiHelper.NO_SIZE_LIMIT));
 
         try {

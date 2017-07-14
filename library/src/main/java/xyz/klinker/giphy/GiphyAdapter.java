@@ -66,10 +66,7 @@ public class GiphyAdapter extends RecyclerView.Adapter<GiphyAdapter.GifViewHolde
         }
 
         private void bind(final GiphyApiHelper.Gif gif) {
-            RequestOptions requestOptions = new RequestOptions()
-                    .centerCrop();
-
-            Glide.with(itemView.getContext()).asGif().load(Uri.parse(gif.gifUrl)).apply(requestOptions).into(gifIv);
+            Glide.with(itemView.getContext()).asGif().load(Uri.parse(gif.gifUrl)).into(gifIv);
             gifIv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

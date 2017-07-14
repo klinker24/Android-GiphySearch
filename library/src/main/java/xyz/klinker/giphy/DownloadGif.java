@@ -77,11 +77,6 @@ class DownloadGif extends AsyncTask<Void, Void, Uri> {
     }
 
     private Uri saveGiffy(Context context, String gifURL, String name, String saveLocation) throws Exception {
-        if (name.contains("-"))
-        {
-            //Remove GIPHY generated tag to get original file name.
-            name = name.substring(0, name.lastIndexOf("-")) + ".gif";
-        }
         //Default save location to internal storage if no location set.
         if (saveLocation == null)
         {

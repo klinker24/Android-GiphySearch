@@ -38,11 +38,14 @@ android {
 }
 
 dependencies {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
     compile project (':library')
-
     compile "com.android.support:appcompat-v7:${ANDROID_SUPPORT_VERSION}"
     compile "com.android.support:design:${ANDROID_SUPPORT_VERSION}"
     compile "com.android.support:support-v4:${ANDROID_SUPPORT_VERSION}"
 
     compile 'com.github.bumptech.glide:glide:4.0.0-RC0'
+    compile 'com.github.searchy2:CustomButton:1.2'
 }

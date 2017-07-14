@@ -35,6 +35,7 @@ public class Giphy {
 
     private Activity activity;
     private String apiKey;
+    private String saveLocation;
     private int limit;
     private int previewSize;
     private long maxFileSize;
@@ -50,6 +51,7 @@ public class Giphy {
         intent.putExtra(GiphyActivity.EXTRA_GIF_LIMIT, limit);
         intent.putExtra(GiphyActivity.EXTRA_PREVIEW_SIZE, previewSize);
         intent.putExtra(GiphyActivity.EXTRA_SIZE_LIMIT, maxFileSize);
+        intent.putExtra(GiphyActivity.EXTRA_SAVE_LOCATION, saveLocation);
         activity.startActivityForResult(intent, requestCode);
     }
 
@@ -59,6 +61,11 @@ public class Giphy {
 
         public Builder(Activity activity, String apiKey) {
             this.giphy = new Giphy(activity, apiKey);
+        }
+
+        public Giphy.Builder setSaveLocation(String saveLocation) {
+            giphy.saveLocation = saveLocation;
+            return this;
         }
 
         public Giphy.Builder maxFileSize(long maxFileSize) {

@@ -39,12 +39,13 @@ public class GiphyActivity extends AppCompatActivity {
     public static final String EXTRA_GIF_LIMIT = "gif_limit";
     public static final String EXTRA_PREVIEW_SIZE = "preview_size";
     public static final String EXTRA_SIZE_LIMIT = "size_limit";
+    public static final String EXTRA_SAVE_LOCATION = "save_location";
+
+    private String saveLocation;
 
     private GiphyApiHelper helper;
-
     private RecyclerView recycler;
     private GiphyAdapter adapter;
-
     private View progressSpinner;
     private MaterialSearchView searchView;
 
@@ -61,6 +62,8 @@ public class GiphyActivity extends AppCompatActivity {
                 getIntent().getExtras().getInt(EXTRA_GIF_LIMIT, GiphyApiHelper.NO_SIZE_LIMIT),
                 getIntent().getExtras().getInt(EXTRA_PREVIEW_SIZE, Giphy.PREVIEW_SMALL),
                 getIntent().getExtras().getLong(EXTRA_SIZE_LIMIT, GiphyApiHelper.NO_SIZE_LIMIT));
+
+        saveLocation = getIntent().getExtras().getString(EXTRA_SAVE_LOCATION, null);
 
         try {
             getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -141,7 +144,7 @@ public class GiphyActivity extends AppCompatActivity {
         adapter = new GiphyAdapter(gifs, new GiphyAdapter.Callback() {
             @Override
             public void onClick(final GiphyApiHelper.Gif item) {
-                new DownloadGif(GiphyActivity.this, item.gifUrl).execute();
+                new DownloadGif(GiphyActivity.this, item.gifUrl, item.name, saveLocation).execute();
             }
         });
 

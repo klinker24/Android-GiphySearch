@@ -18,6 +18,7 @@
       package="xyz.klinker.giphy_example" >
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application android:label="@string/app_name" android:icon="@mipmap/ic_launcher" >
 

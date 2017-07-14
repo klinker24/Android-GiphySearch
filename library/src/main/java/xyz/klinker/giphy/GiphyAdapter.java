@@ -65,7 +65,6 @@ public class GiphyAdapter extends RecyclerView.Adapter<GiphyAdapter.GifViewHolde
 
         private ImageView gifIv;
         private ImageView gifPreview;
-        private Drawable previewBitmap;
         private boolean previewDownloaded;
         private boolean gifDownloaded;
 

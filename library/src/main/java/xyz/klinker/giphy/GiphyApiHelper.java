@@ -196,7 +196,6 @@ class GiphyApiHelper {
         String previewGif;
         String gifUrl;
         String mp4Url;
-        Drawable previewDrawable;
         boolean previewDownloaded = false;
         boolean gifDownloaded = false;
 
@@ -210,14 +209,6 @@ class GiphyApiHelper {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-        }
-
-        public Drawable getPreviewDrawable() {
-            return previewDrawable;
-        }
-
-        public void setPreviewDrawable(Drawable previewDrawable) {
-            this.previewDrawable = previewDrawable;
         }
 
         public boolean getPreviewDownloaded() {

@@ -42,6 +42,7 @@ public class GiphyActivity extends AppCompatActivity {
     public static final String EXTRA_SAVE_LOCATION = "save_location";
 
     private String saveLocation;
+    private boolean queried = false;
 
     private GiphyApiHelper helper;
     private RecyclerView recycler;
@@ -98,8 +99,23 @@ public class GiphyActivity extends AppCompatActivity {
 
             @Override
             public void onSearchViewClosed() {
-                setResult(Activity.RESULT_CANCELED);
-                finish();
+                if (queried)
+                {
+                    loadTrending();
+                    queried = false;
+                    //OnSearchViewClosed forces SearchView to close. Show SearchView again. 
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            searchView.showSearch(false);
+                        }
+                    }, 25);
+                }
+                else
+                {
+                    setResult(Activity.RESULT_CANCELED);
+                    finish();
+                }
             }
         });
 
@@ -108,13 +124,37 @@ public class GiphyActivity extends AppCompatActivity {
             public void run() {
                 loadTrending();
             }
-        }, 500);
+        }, 250);
     }
 
     @Override
     public void onStart() {
         super.onStart();
         searchView.showSearch(false);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (queried)
+        {
+            loadTrending();
+            queried = false;
+        }
+        else
+        {
+            setResult(Activity.RESULT_CANCELED);
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
+
+        return true;
     }
 
     private void loadTrending() {
@@ -128,6 +168,7 @@ public class GiphyActivity extends AppCompatActivity {
     }
 
     private void executeQuery(String query) {
+        queried = true;
         progressSpinner.setVisibility(View.VISIBLE);
         dismissKeyboard();
 
@@ -150,16 +191,6 @@ public class GiphyActivity extends AppCompatActivity {
 
         recycler.setLayoutManager(new LinearLayoutManager(GiphyActivity.this));
         recycler.setAdapter(adapter);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-
-        MenuItem item = menu.findItem(R.id.action_search);
-        searchView.setMenuItem(item);
-
-        return true;
     }
 
     private void dismissKeyboard() {

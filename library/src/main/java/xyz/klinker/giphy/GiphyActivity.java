@@ -101,8 +101,9 @@ public class GiphyActivity extends AppCompatActivity {
             public void onSearchViewClosed() {
                 if (queried)
                 {
-                    loadTrending();
                     queried = false;
+                    searchView.setQuery("", false);
+                    loadTrending();
                     //OnSearchViewClosed forces SearchView to close. Show SearchView again. 
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -137,8 +138,9 @@ public class GiphyActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (queried)
         {
-            loadTrending();
             queried = false;
+            searchView.setQuery("", false);
+            loadTrending();
         }
         else
         {

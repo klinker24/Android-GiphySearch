@@ -77,6 +77,7 @@ class DownloadGif extends AsyncTask<Void, Void, Uri> {
     }
 
     private Uri saveGiffy(Context context, String gifURL, String name, String saveLocation) throws Exception {
+        name = name + ".gif";
         //Default save location to internal storage if no location set.
         if (saveLocation == null)
         {

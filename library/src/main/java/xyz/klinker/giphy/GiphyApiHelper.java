@@ -61,7 +61,7 @@ class GiphyApiHelper {
     private static final String[] PREVIEW_SIZE = new String[]{"fixed_width_downsampled", "fixed_width", "downsized"};
 
     private static final String[] SIZE_OPTIONS = new String[]{"original", "downsized_large", "downsized_medium",
-            "downsized", "downsized_small", "fixed_height", "fixed_width", "fixed_height_small", "fixed_width_small"};
+            "downsized", "fixed_height", "fixed_width", "fixed_height_small", "fixed_width_small"};
 
     interface Callback {
         void onResponse(List<Gif> gifs);

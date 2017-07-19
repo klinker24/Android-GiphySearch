@@ -16,6 +16,8 @@
 
 package xyz.klinker.giphy;
 
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -45,34 +47,38 @@ class GiphyApiHelper {
     public static final int NO_SIZE_LIMIT = -1;
 
     private String apiKey;
+    private int limit;
+    private int previewSize;
     private long maxSize;
 
-    GiphyApiHelper(String apiKey, long maxSize) {
+    GiphyApiHelper(String apiKey, int limit, int previewSize, long maxSize) {
         this.apiKey = apiKey;
+        this.limit = limit;
+        this.previewSize = previewSize;
         this.maxSize = maxSize;
     }
 
-    private static final String[] SIZE_OPTIONS = new String[]{
-            "original", "downsized_medium", "fixed_height", "fixed_width", "fixed_height_small",
-            /*"fixed_width_small",*/ "downsized_large", "downsized_medium", "downsized"
-    };
+    private static final String[] PREVIEW_SIZE = new String[]{"fixed_width_downsampled", "fixed_width", "downsized"};
+
+    private static final String[] SIZE_OPTIONS = new String[]{"original", "downsized_large", "downsized_medium",
+            "downsized", "fixed_height", "fixed_width", "fixed_height_small", "fixed_width_small"};
 
     interface Callback {
         void onResponse(List<Gif> gifs);
     }
 
     void search(String query, Callback callback) {
-        new SearchGiffy(apiKey, maxSize, query, callback).execute();
+        new SearchGiffy(apiKey, limit, previewSize, maxSize, query, callback).execute();
     }
 
     void trends(Callback callback) {
-        new GiffyTrends(apiKey, maxSize, callback).execute();
+        new GiffyTrends(apiKey, previewSize, maxSize, callback).execute();
     }
 
     private static class GiffyTrends extends SearchGiffy {
 
-        GiffyTrends(String apiKey, long maxSize, Callback callback) {
-            super(apiKey, maxSize, null, callback);
+        GiffyTrends(String apiKey, int previewSize, long maxSize, Callback callback) {
+            super(apiKey, -1, previewSize, maxSize, null, callback);
         }
 
         @Override
@@ -84,12 +90,16 @@ class GiphyApiHelper {
     private static class SearchGiffy extends AsyncTask<Void, Void, List<Gif>> {
 
         private String apiKey;
+        private int limit;
+        private int previewSize;
         private long maxSize;
         private String query;
         private Callback callback;
 
-        SearchGiffy(String apiKey, long maxSize, String query, Callback callback) {
+        SearchGiffy(String apiKey, int limit, int previewSize, long maxSize, String query, Callback callback) {
             this.apiKey = apiKey;
+            this.limit = limit;
+            this.previewSize = previewSize;
             this.maxSize = maxSize;
             this.query = query;
             this.callback = callback;
@@ -125,12 +135,15 @@ class GiphyApiHelper {
 
                 for (int i = 0; i < data.length(); i++) {
                     JSONObject gif = data.getJSONObject(i);
+                    String name = gif.getString("slug");
+                    Log.d("GIF Name", name);
                     JSONObject images = gif.getJSONObject("images");
-                    JSONObject originalStill = images.getJSONObject("original_still");
+                    JSONObject previewImage = images.getJSONObject("downsized_still");
+                    JSONObject previewGif = images.getJSONObject(PREVIEW_SIZE[previewSize]);
                     JSONObject originalSize = images.getJSONObject("original");
                     JSONObject downsized = null;
 
-                    // get the highest quality that twitter can post (5 mb)
+                    // Return the highest quality GIF under MaxSizeLimit.
                     for (String size : SIZE_OPTIONS) {
                         downsized = images.getJSONObject(size);
                         Log.v("giphy", size + ": " + downsized.getString("size") + " bytes");
@@ -145,7 +158,9 @@ class GiphyApiHelper {
 
                     if (downsized != null) {
                         gifList.add(
-                                new Gif(originalStill.getString("url"),
+                                new Gif(name,
+                                        previewImage.getString("url"),
+                                        previewGif.getString("url"),
                                         downsized.getString("url"),
                                         originalSize.getString("mp4"))
                         );
@@ -167,10 +182,7 @@ class GiphyApiHelper {
         }
 
         protected String buildSearchUrl(String query) throws UnsupportedEncodingException {
-            return "http://api.giphy.com/v1/gifs/search?" +
-                    "q=" + URLEncoder.encode(query, "UTF-8") + "&" +
-                    "limit=80&" +
-                    "api_key=" + apiKey;
+            return "http://api.giphy.com/v1/gifs/search?q=" + URLEncoder.encode(query, "UTF-8") + "&limit=" + limit + "&api_key=" + apiKey;
         }
 
         private String getResponseText(InputStream inStream) {
@@ -179,15 +191,40 @@ class GiphyApiHelper {
     }
 
     static class Gif {
+        String name;
         String previewImage;
+        String previewGif;
         String gifUrl;
         String mp4Url;
+        boolean previewDownloaded = false;
+        boolean gifDownloaded = false;
 
-        Gif(String previewImage, String gifUrl, String mp4Url) {
-            this.previewImage = URLDecoder.decode(previewImage);
-            this.gifUrl = URLDecoder.decode(gifUrl);
-            this.mp4Url = URLDecoder.decode(mp4Url);
+        Gif(String name, String previewImage, String previewGif, String gifUrl, String mp4Url) {
+            try {
+                this.name = URLDecoder.decode(name, "UTF-8");
+                this.previewImage = URLDecoder.decode(previewImage, "UTF-8");
+                this.previewGif = URLDecoder.decode(previewGif, "UTF-8");
+                this.gifUrl = URLDecoder.decode(gifUrl, "UTF-8");
+                this.mp4Url = URLDecoder.decode(mp4Url, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public boolean getPreviewDownloaded() {
+            return previewDownloaded;
+        }
+
+        public void setPreviewDownloaded(boolean previewDownloaded) {
+            this.previewDownloaded = previewDownloaded;
+        }
+
+        public boolean getGifDownloaded() {
+            return gifDownloaded;
+        }
+
+        public void setGifDownloaded(boolean gifDownloaded) {
+            this.gifDownloaded = gifDownloaded;
         }
     }
-
 }

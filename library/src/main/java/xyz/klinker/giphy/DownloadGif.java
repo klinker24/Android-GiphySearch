@@ -7,24 +7,30 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.util.Log;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
+import java.nio.channels.FileChannel;
 
 class DownloadGif extends AsyncTask<Void, Void, Uri> {
 
     Activity activity;
-    String video;
+    String gifURL;
+    String name;
+    String saveLocation;
     ProgressDialog dialog;
 
-    DownloadGif(Activity activity, String videoLink) {
+    DownloadGif(Activity activity, String gifURL, String name, String saveLocation) {
         this.activity = activity;
-        this.video = videoLink;
+        this.gifURL = gifURL;
+        this.name = name;
+        this.saveLocation = saveLocation;
     }
 
     @Override
@@ -39,7 +45,7 @@ class DownloadGif extends AsyncTask<Void, Void, Uri> {
     @Override
     protected Uri doInBackground(Void... arg0) {
         try {
-            return saveGiffy(activity, video);
+            return saveGiffy(activity, gifURL, name, saveLocation);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -55,45 +61,51 @@ class DownloadGif extends AsyncTask<Void, Void, Uri> {
             try {
                 dialog.dismiss();
             } catch (Exception e) {
+                Log.e("Exception", String.valueOf(e));
             }
         } else {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 Toast.makeText(activity, R.string.error_downloading_gif,
                         Toast.LENGTH_SHORT).show();
+                activity.finish();
             } else {
                 Toast.makeText(activity, R.string.error_downloading_gif_permission,
                         Toast.LENGTH_SHORT).show();
+                activity.finish();
             }
         }
     }
 
-    private Uri saveGiffy(Context context, String videoUrl) throws Exception {
-        final File file = new File(context.getFilesDir().getPath(),
-                "giphy_" + System.currentTimeMillis() + ".gif");
-        if (!file.createNewFile()) {
-            // file already exists
+    private Uri saveGiffy(Context context, String gifURL, String name, String saveLocation) throws Exception {
+        name = name + ".gif";
+        //Default save location to internal storage if no location set.
+        if (saveLocation == null)
+        {
+            saveLocation = context.getFilesDir().getPath();
+        }
+        //Create save location if not exist.
+        File dir = new File(saveLocation);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        File saveGif = new File(saveLocation, name);
+        if (!saveGif.createNewFile()) {
+            //File exists, return existing File URI.
+            return Uri.fromFile(saveGif);
+        }
+        else
+        {
+            //Download GIF via Glide, then save to specified location.
+            File gifDownload = Glide.with(context).downloadOnly().load(gifURL).submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get();
+            FileInputStream inStream = new FileInputStream(gifDownload);
+            FileOutputStream outStream = new FileOutputStream(saveGif);
+            FileChannel inChannel = inStream.getChannel();
+            FileChannel outChannel = outStream.getChannel();
+            inChannel.transferTo(0, inChannel.size(), outChannel);
+            inStream.close();
+            outStream.close();
         }
 
-        URL url = new URL(videoUrl);
-        URLConnection connection = url.openConnection();
-        connection.setReadTimeout(5000);
-        connection.setConnectTimeout(30000);
-
-        InputStream is = connection.getInputStream();
-        BufferedInputStream inStream = new BufferedInputStream(is, 1024 * 5);
-        FileOutputStream outStream = new FileOutputStream(file);
-
-        byte[] buffer = new byte[1024 * 5];
-        int len;
-        while ((len = inStream.read(buffer)) != -1) {
-            outStream.write(buffer, 0, len);
-        }
-
-        outStream.flush();
-        outStream.close();
-        inStream.close();
-        is.close();
-
-        return Uri.fromFile(file);
+        return Uri.fromFile(saveGif);
     }
 }

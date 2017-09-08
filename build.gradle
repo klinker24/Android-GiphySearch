@@ -17,14 +17,16 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath "com.android.tools.build:gradle:${GRADLE_PLUGIN_VERSION}"
     }
 }
 
 allprojects {
     repositories {
+        google()
         jcenter()
         mavenCentral()
+        maven { url 'https://jitpack.io' }
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
 }

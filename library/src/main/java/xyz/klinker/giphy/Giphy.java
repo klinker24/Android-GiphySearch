@@ -78,8 +78,7 @@ public class Giphy {
             return this;
         }
 
-        public Giphy.Builder setPreviewSize(int previewSize)
-        {
+        public Giphy.Builder setPreviewSize(int previewSize) {
             giphy.previewSize = previewSize;
             return this;
         }

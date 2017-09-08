@@ -16,4 +16,8 @@
 
 <resources>
     <string name="app_name">Giphy Search Example</string>
+
+    <string name="search_small">Small GIFs</string>
+    <string name="search_medium">Medium GIFs</string>
+    <string name="search_large">Large GIFs</string>
 </resources>

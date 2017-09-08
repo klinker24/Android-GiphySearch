@@ -25,7 +25,6 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
-import stream.custombutton.CustomButton;
 import xyz.klinker.giphy.Giphy;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,10 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        imageView = (ImageView) findViewById(R.id.imageView);
+        imageView = (ImageView) findViewById(R.id.image);
 
-        CustomButton btn1 = (CustomButton) findViewById(R.id.btn1);
-        btn1.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.small).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new Giphy.Builder(MainActivity.this, "dc6zaTOxFJmzC") //Giphy BETA API Key
@@ -52,8 +50,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        CustomButton btn2 = (CustomButton) findViewById(R.id.btn2);
-        btn2.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.medium).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new Giphy.Builder(MainActivity.this, "dc6zaTOxFJmzC")
@@ -63,8 +60,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        CustomButton btn3 = (CustomButton) findViewById(R.id.btn3);
-        btn3.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.large).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new Giphy.Builder(MainActivity.this, "dc6zaTOxFJmzC")

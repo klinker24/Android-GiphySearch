@@ -33,7 +33,7 @@ android {
     }
 
     lintOptions {
-        abortOnError true
+        abortOnError false
         disable 'IconMissingDensityFolder'
         textOutput 'stdout'
         xmlReport false

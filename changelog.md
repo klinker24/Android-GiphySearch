@@ -1,5 +1,8 @@
 ## Changelog
 
+### Version 1.1.0:
+- Various changes from PR #1
+
 ### Version 1.0.3:
 - Make the GIFs a bit bigger on the search page
 

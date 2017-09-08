@@ -20,7 +20,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -29,7 +28,6 @@ import xyz.klinker.giphy.Giphy;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button findGif;
     private ImageView imageView;
 
     @Override

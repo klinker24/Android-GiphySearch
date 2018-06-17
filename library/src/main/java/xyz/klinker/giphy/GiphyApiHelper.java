@@ -83,7 +83,7 @@ class GiphyApiHelper {
 
         @Override
         protected String buildSearchUrl(String query) throws UnsupportedEncodingException {
-            return "http://api.giphy.com/v1/gifs/trending?api_key=" + getApiKey();
+            return "https://api.giphy.com/v1/gifs/trending?api_key=" + getApiKey();
         }
     }
 
@@ -182,7 +182,7 @@ class GiphyApiHelper {
         }
 
         protected String buildSearchUrl(String query) throws UnsupportedEncodingException {
-            return "http://api.giphy.com/v1/gifs/search?q=" + URLEncoder.encode(query, "UTF-8") + "&limit=" + limit + "&api_key=" + apiKey;
+            return "https://api.giphy.com/v1/gifs/search?q=" + URLEncoder.encode(query, "UTF-8") + "&limit=" + limit + "&api_key=" + apiKey;
         }
 
         private String getResponseText(InputStream inStream) {

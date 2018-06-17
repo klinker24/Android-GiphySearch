@@ -1,5 +1,8 @@
 ## Changelog
 
+### Version 1.1.2:
+- Use https for the Giphy API
+
 ### Version 1.1.0:
 - Various changes from PR #1
 

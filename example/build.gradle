@@ -16,7 +16,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion Integer.parseInt(project.COMPILE_SDK)
-    buildToolsVersion project.BUILD_TOOLS_VERSION
 
     defaultConfig {
         applicationId project.APPLICATION_ID
@@ -38,12 +37,12 @@ android {
 }
 
 dependencies {
-    annotationProcessor "com.github.bumptech.glide:compiler:4.0.0"
-    implementation "com.github.bumptech.glide:glide:4.0.0"
+    annotationProcessor "com.github.bumptech.glide:compiler:4.8.0"
+    implementation "com.github.bumptech.glide:glide:4.8.0"
 
-    implementation "com.android.support:appcompat-v7:${ANDROID_SUPPORT_VERSION}"
-    implementation "com.android.support:design:${ANDROID_SUPPORT_VERSION}"
-    implementation "com.android.support:support-v4:${ANDROID_SUPPORT_VERSION}"
+    implementation "androidx.appcompat:appcompat:${ANDROID_X_VERSION}"
+    implementation "com.google.android.material:material:${ANDROID_X_VERSION}"
+    implementation "androidx.legacy:legacy-support-v4:${ANDROID_X_VERSION}"
 
     implementation project(':library')
 }

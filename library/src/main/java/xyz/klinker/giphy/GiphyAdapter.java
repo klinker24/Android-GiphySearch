@@ -2,8 +2,8 @@ package xyz.klinker.giphy;
 
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,19 +48,17 @@ public class GiphyAdapter extends RecyclerView.Adapter<GiphyAdapter.GifViewHolde
 
     @Override
     public void onBindViewHolder(GifViewHolder holder, int position) {
-        if (position != 0) {
-            holder.bind(gifs.get(position - 1));
-        }
+        holder.bind(gifs.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return gifs.size() + 1;
+        return gifs.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        return position == 0 ? VIEW_TYPE_HEADER : VIEW_TYPE_NORMAL;
+        return VIEW_TYPE_NORMAL;
     }
 
     class GifViewHolder extends RecyclerView.ViewHolder {

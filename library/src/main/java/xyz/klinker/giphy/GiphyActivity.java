@@ -20,16 +20,21 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -45,10 +50,11 @@ public class GiphyActivity extends AppCompatActivity {
     private boolean queried = false;
 
     private GiphyApiHelper helper;
+    private View toolbar;
     private RecyclerView recycler;
     private GiphyAdapter adapter;
     private View progressSpinner;
-    private MaterialSearchView searchView;
+    private EditText searchView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,53 +76,21 @@ public class GiphyActivity extends AppCompatActivity {
             getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         } catch (Exception e) { }
 
-        setContentView(R.layout.giffy_search_activity);
+        setContentView(R.layout.giphy_search_activity);
 
+        toolbar = findViewById(R.id.toolbar_container);
         recycler = (RecyclerView) findViewById(R.id.recycler_view);
         progressSpinner = findViewById(R.id.list_progress);
 
-        searchView = (MaterialSearchView) findViewById(R.id.search_view);
-        searchView.setVoiceSearch(false);
-
-        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+        searchView = (EditText) findViewById(R.id.search_view);
+        searchView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                executeQuery(query);
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    executeQuery(searchView.getText().toString());
+                    return true;
+                }
                 return false;
-            }
-        });
-
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
-            @Override
-            public void onSearchViewShown() {
-
-            }
-
-            @Override
-            public void onSearchViewClosed() {
-                if (queried)
-                {
-                    queried = false;
-                    searchView.setQuery("", false);
-                    loadTrending();
-                    //OnSearchViewClosed forces SearchView to close. Show SearchView again. 
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            searchView.showSearch(false);
-                        }
-                    }, 25);
-                }
-                else
-                {
-                    setResult(Activity.RESULT_CANCELED);
-                    finish();
-                }
             }
         });
 
@@ -131,32 +105,18 @@ public class GiphyActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        searchView.showSearch(false);
     }
 
     @Override
     public void onBackPressed() {
-        if (queried)
-        {
+        if (queried) {
             queried = false;
-            searchView.setQuery("", false);
+            searchView.setText("");
             loadTrending();
-        }
-        else
-        {
+        } else {
             setResult(Activity.RESULT_CANCELED);
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-
-        MenuItem item = menu.findItem(R.id.action_search);
-        searchView.setMenuItem(item);
-
-        return true;
     }
 
     private void loadTrending() {

@@ -16,8 +16,6 @@
 
 package xyz.klinker.giphy;
 
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -50,12 +48,17 @@ class GiphyApiHelper {
     private int limit;
     private int previewSize;
     private long maxSize;
+    private boolean useStickers = false;
 
     GiphyApiHelper(String apiKey, int limit, int previewSize, long maxSize) {
         this.apiKey = apiKey;
         this.limit = limit;
         this.previewSize = previewSize;
         this.maxSize = maxSize;
+    }
+
+    public void useStickers(boolean useStickers) {
+        this.useStickers = useStickers;
     }
 
     private static final String[] PREVIEW_SIZE = new String[]{"fixed_width_downsampled", "fixed_width", "downsized"};
@@ -68,26 +71,26 @@ class GiphyApiHelper {
     }
 
     void search(String query, Callback callback) {
-        new SearchGiffy(apiKey, limit, previewSize, maxSize, query, callback).execute();
+        new SearchGiphy(apiKey, limit, previewSize, maxSize, query, callback, useStickers).execute();
     }
 
     void trends(Callback callback) {
-        new GiffyTrends(apiKey, previewSize, maxSize, callback).execute();
+        new GiphyTrends(apiKey, previewSize, maxSize, callback, useStickers).execute();
     }
 
-    private static class GiffyTrends extends SearchGiffy {
+    private static class GiphyTrends extends SearchGiphy {
 
-        GiffyTrends(String apiKey, int previewSize, long maxSize, Callback callback) {
-            super(apiKey, -1, previewSize, maxSize, null, callback);
+        GiphyTrends(String apiKey, int previewSize, long maxSize, Callback callback, boolean useStickers) {
+            super(apiKey, -1, previewSize, maxSize, null, callback, useStickers);
         }
 
         @Override
         protected String buildSearchUrl(String query) throws UnsupportedEncodingException {
-            return "https://api.giphy.com/v1/gifs/trending?api_key=" + getApiKey();
+            return "https://api.giphy.com/v1/" + (useStickers ? "stickers" : "gifs") + "/trending?api_key=" + getApiKey();
         }
     }
 
-    private static class SearchGiffy extends AsyncTask<Void, Void, List<Gif>> {
+    private static class SearchGiphy extends AsyncTask<Void, Void, List<Gif>> {
 
         private String apiKey;
         private int limit;
@@ -95,14 +98,16 @@ class GiphyApiHelper {
         private long maxSize;
         private String query;
         private Callback callback;
+        protected boolean useStickers;
 
-        SearchGiffy(String apiKey, int limit, int previewSize, long maxSize, String query, Callback callback) {
+        SearchGiphy(String apiKey, int limit, int previewSize, long maxSize, String query, Callback callback, boolean useStickers) {
             this.apiKey = apiKey;
             this.limit = limit;
             this.previewSize = previewSize;
             this.maxSize = maxSize;
             this.query = query;
             this.callback = callback;
+            this.useStickers = useStickers;
         }
 
         String getApiKey() {
@@ -182,7 +187,7 @@ class GiphyApiHelper {
         }
 
         protected String buildSearchUrl(String query) throws UnsupportedEncodingException {
-            return "https://api.giphy.com/v1/gifs/search?q=" + URLEncoder.encode(query, "UTF-8") + "&limit=" + limit + "&api_key=" + apiKey;
+            return "https://api.giphy.com/v1/" + (useStickers ? "stickers" : "gifs") + "/search?q=" + URLEncoder.encode(query, "UTF-8") + "&limit=" + limit + "&api_key=" + apiKey;
         }
 
         private String getResponseText(InputStream inStream) {

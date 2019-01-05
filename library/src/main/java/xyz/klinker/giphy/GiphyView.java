@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 public class GiphyView extends FrameLayout {
 
     private GifSelectedCallback callback = null;
-    private boolean queried = false;
 
     private GiphyApiHelper helper;
     private RecyclerView recycler;
@@ -66,7 +65,13 @@ public class GiphyView extends FrameLayout {
     }
 
     public void initializeView(String apiKey, long sizeLimit) {
+        initializeView(apiKey, sizeLimit, false);
+    }
+
+    public void initializeView(String apiKey, long sizeLimit, boolean useStickers) {
         helper = new GiphyApiHelper(apiKey, 100, Giphy.PREVIEW_SMALL, sizeLimit);
+        helper.useStickers(useStickers);
+
         loadTrending();
     }
 
@@ -85,7 +90,6 @@ public class GiphyView extends FrameLayout {
     }
 
     private void executeQuery(String query) {
-        queried = true;
         progressSpinner.setVisibility(View.VISIBLE);
         dismissKeyboard();
 

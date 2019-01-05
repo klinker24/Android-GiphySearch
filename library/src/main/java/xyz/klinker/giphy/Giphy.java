@@ -39,6 +39,7 @@ public class Giphy {
     private int limit;
     private int previewSize;
     private long maxFileSize;
+    private boolean useStickers;
 
     private Giphy(Activity activity, String apiKey) {
         this.activity = activity;
@@ -52,6 +53,7 @@ public class Giphy {
         intent.putExtra(GiphyActivity.EXTRA_PREVIEW_SIZE, previewSize);
         intent.putExtra(GiphyActivity.EXTRA_SIZE_LIMIT, maxFileSize);
         intent.putExtra(GiphyActivity.EXTRA_SAVE_LOCATION, saveLocation);
+        intent.putExtra(GiphyActivity.EXTRA_USE_STICKERS, useStickers);
         activity.startActivityForResult(intent, requestCode);
     }
 
@@ -80,6 +82,11 @@ public class Giphy {
 
         public Giphy.Builder setPreviewSize(int previewSize) {
             giphy.previewSize = previewSize;
+            return this;
+        }
+
+        public Giphy.Builder useStickers(boolean useStickers) {
+            giphy.useStickers = useStickers;
             return this;
         }
 

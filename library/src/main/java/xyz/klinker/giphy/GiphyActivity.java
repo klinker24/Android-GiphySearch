@@ -41,8 +41,10 @@ public class GiphyActivity extends AppCompatActivity {
     public static final String EXTRA_PREVIEW_SIZE = "preview_size";
     public static final String EXTRA_SIZE_LIMIT = "size_limit";
     public static final String EXTRA_SAVE_LOCATION = "save_location";
+    public static final String EXTRA_USE_STICKERS = "use_stickers";
 
     private String saveLocation;
+    private boolean useStickers;
     private boolean queried = false;
 
     private GiphyApiHelper helper;
@@ -59,13 +61,15 @@ public class GiphyActivity extends AppCompatActivity {
                 !getIntent().getExtras().containsKey(EXTRA_API_KEY)) {
             throw new RuntimeException("EXTRA_API_KEY is required!");
         }
+        
+        saveLocation = getIntent().getExtras().getString(EXTRA_SAVE_LOCATION, null);
+        useStickers = getIntent().getExtras().getBoolean(EXTRA_USE_STICKERS, false);
 
         helper = new GiphyApiHelper(getIntent().getExtras().getString(EXTRA_API_KEY),
                 getIntent().getExtras().getInt(EXTRA_GIF_LIMIT, GiphyApiHelper.NO_SIZE_LIMIT),
                 getIntent().getExtras().getInt(EXTRA_PREVIEW_SIZE, Giphy.PREVIEW_SMALL),
                 getIntent().getExtras().getLong(EXTRA_SIZE_LIMIT, GiphyApiHelper.NO_SIZE_LIMIT));
-
-        saveLocation = getIntent().getExtras().getString(EXTRA_SAVE_LOCATION, null);
+        helper.useStickers(useStickers);
 
         try {
             getWindow().requestFeature(Window.FEATURE_NO_TITLE);

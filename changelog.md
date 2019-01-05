@@ -1,5 +1,9 @@
 ## Changelog
 
+### Version 2.0.0:
+- Add a `GiphyView` that can be built into the UI, instead of forcing implementing the activity
+- Add sticker support through the `Giphy.Builder` or `GiphyView.useStickers`
+
 ### Version 1.1.2:
 - Use https for the Giphy API
 

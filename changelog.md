@@ -1,5 +1,8 @@
 ## Changelog
 
+### Version 2.1.0:
+- On the `GiphyView`, use a grid of images, rather than a single line of images
+
 ### Version 2.0.0:
 - Add a `GiphyView` that can be built into the UI, instead of forcing implementing the activity
 - Add sticker support through the `Giphy.Builder` or `GiphyView.useStickers`

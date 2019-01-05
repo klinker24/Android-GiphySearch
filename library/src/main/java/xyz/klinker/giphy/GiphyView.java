@@ -16,6 +16,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -108,9 +109,9 @@ public class GiphyView extends FrameLayout {
             public void onClick(final GiphyApiHelper.Gif item) {
                 new DownloadGif((Activity) getContext(), item.gifUrl, item.name, getContext().getCacheDir().getAbsolutePath(), callback).execute();
             }
-        });
+        }, true);
 
-        recycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        recycler.setLayoutManager(new GridLayoutManager(getContext(), getContext().getResources().getInteger(R.integer.grid_count)));
         recycler.setAdapter(adapter);
     }
 

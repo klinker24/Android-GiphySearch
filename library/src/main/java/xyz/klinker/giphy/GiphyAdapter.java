@@ -22,26 +22,29 @@ import java.util.List;
 
 public class GiphyAdapter extends RecyclerView.Adapter<GiphyAdapter.GifViewHolder> {
 
-    private static final int VIEW_TYPE_HEADER = 1;
-    private static final int VIEW_TYPE_NORMAL = 2;
-
     interface Callback {
         void onClick(GiphyApiHelper.Gif item);
     }
 
     private List<GiphyApiHelper.Gif> gifs;
     private GiphyAdapter.Callback callback;
+    private boolean useSquare;
 
     GiphyAdapter(List<GiphyApiHelper.Gif> gifs, GiphyAdapter.Callback callback) {
+        this(gifs, callback, false);
+    }
+
+    GiphyAdapter(List<GiphyApiHelper.Gif> gifs, GiphyAdapter.Callback callback, boolean useSquare) {
         this.gifs = gifs;
         this.callback = callback;
+        this.useSquare = useSquare;
     }
 
     @Override
     public GifViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(viewType == VIEW_TYPE_HEADER ?
-                        R.layout.adapter_item_gif_header :
+                .inflate(useSquare ?
+                        R.layout.adapter_item_gif_square :
                         R.layout.adapter_item_gif, parent, false);
         return new GifViewHolder(v);
     }
@@ -54,11 +57,6 @@ public class GiphyAdapter extends RecyclerView.Adapter<GiphyAdapter.GifViewHolde
     @Override
     public int getItemCount() {
         return gifs.size();
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return VIEW_TYPE_NORMAL;
     }
 
     class GifViewHolder extends RecyclerView.ViewHolder {

@@ -61,7 +61,7 @@ public class GiphyActivity extends AppCompatActivity {
                 !getIntent().getExtras().containsKey(EXTRA_API_KEY)) {
             throw new RuntimeException("EXTRA_API_KEY is required!");
         }
-        
+
         saveLocation = getIntent().getExtras().getString(EXTRA_SAVE_LOCATION, null);
         useStickers = getIntent().getExtras().getBoolean(EXTRA_USE_STICKERS, false);
 

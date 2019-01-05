@@ -74,6 +74,10 @@ public class GiphyView extends FrameLayout {
         helper.useStickers(useStickers);
 
         loadTrending();
+
+        if (useStickers) {
+            searchView.setHint(R.string.find_a_sticker);
+        }
     }
 
     public void setSelectedCallback(GifSelectedCallback callback) {

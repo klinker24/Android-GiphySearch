@@ -15,7 +15,8 @@
   -->
 
 <resources>
-    <string name="find_a_gif">Find a GIF</string>
+    <string name="find_a_gif">Search GIFs…</string>
+    <string name="find_a_sticker">Search stickers…</string>
     <string name="play_gif">Play</string>
     <string name="add_gif">Add GIF</string>
     <string name="error_downloading_gif">Error downloading GIF</string>

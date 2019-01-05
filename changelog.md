@@ -1,5 +1,8 @@
 ## Changelog
 
+### Version 2.1.1:
+- Slight theme improvements
+
 ### Version 2.1.0:
 - On the `GiphyView`, use a grid of images, rather than a single line of images
 

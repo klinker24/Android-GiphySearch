@@ -67,6 +67,13 @@ public class MainActivity extends AppCompatActivity {
                         .start();
             }
         });
+
+        findViewById(R.id.view).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, GiphyViewActivity.class));
+            }
+        });
     }
 
     @Override

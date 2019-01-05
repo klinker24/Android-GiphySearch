@@ -36,6 +36,9 @@
 
         </activity>
 
+        <activity android:name=".GiphyViewActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+
     </application>
 
 </manifest> 

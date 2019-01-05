@@ -25,12 +25,18 @@ class DownloadGif extends AsyncTask<Void, Void, Uri> {
     String name;
     String saveLocation;
     ProgressDialog dialog;
+    GifSelectedCallback callback;
 
     DownloadGif(Activity activity, String gifURL, String name, String saveLocation) {
+        this(activity, gifURL, name, saveLocation, null);
+    }
+
+    DownloadGif(Activity activity, String gifURL, String name, String saveLocation, GifSelectedCallback callback) {
         this.activity = activity;
         this.gifURL = gifURL;
         this.name = name;
         this.saveLocation = saveLocation;
+        this.callback = callback;
     }
 
     @Override
@@ -54,7 +60,15 @@ class DownloadGif extends AsyncTask<Void, Void, Uri> {
 
     @Override
     protected void onPostExecute(Uri downloadedTo) {
-        if (downloadedTo != null) {
+        if (callback != null) {
+            callback.onGifSelected(downloadedTo);
+
+            try {
+                dialog.dismiss();
+            } catch (Exception e) {
+                Log.e("Exception", String.valueOf(e));
+            }
+        } else if (downloadedTo != null) {
             activity.setResult(Activity.RESULT_OK, new Intent().setData(downloadedTo));
             activity.finish();
 
@@ -78,23 +92,23 @@ class DownloadGif extends AsyncTask<Void, Void, Uri> {
 
     private Uri saveGiffy(Context context, String gifURL, String name, String saveLocation) throws Exception {
         name = name + ".gif";
+
         //Default save location to internal storage if no location set.
-        if (saveLocation == null)
-        {
+        if (saveLocation == null) {
             saveLocation = context.getFilesDir().getPath();
         }
+
         //Create save location if not exist.
         File dir = new File(saveLocation);
         if (!dir.exists()) {
             dir.mkdirs();
         }
+
         File saveGif = new File(saveLocation, name);
         if (!saveGif.createNewFile()) {
             //File exists, return existing File URI.
             return Uri.fromFile(saveGif);
-        }
-        else
-        {
+        } else {
             //Download GIF via Glide, then save to specified location.
             File gifDownload = Glide.with(context).downloadOnly().load(gifURL).submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get();
             FileInputStream inStream = new FileInputStream(gifDownload);

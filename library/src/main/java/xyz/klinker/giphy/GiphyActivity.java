@@ -24,11 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
@@ -50,7 +46,6 @@ public class GiphyActivity extends AppCompatActivity {
     private boolean queried = false;
 
     private GiphyApiHelper helper;
-    private View toolbar;
     private RecyclerView recycler;
     private GiphyAdapter adapter;
     private View progressSpinner;
@@ -78,7 +73,6 @@ public class GiphyActivity extends AppCompatActivity {
 
         setContentView(R.layout.giphy_search_activity);
 
-        toolbar = findViewById(R.id.toolbar_container);
         recycler = (RecyclerView) findViewById(R.id.recycler_view);
         progressSpinner = findViewById(R.id.list_progress);
 

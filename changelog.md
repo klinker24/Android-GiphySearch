@@ -1,5 +1,8 @@
 ## Changelog
 
+### Version 2.1.2:
+- Use different grid sizes for the different screen sizes
+
 ### Version 2.1.1:
 - Slight theme improvements
 

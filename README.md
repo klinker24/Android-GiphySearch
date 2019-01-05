@@ -28,7 +28,7 @@ To include it in your project, add this to your module's `build.gradle` file:
 ```groovy
 dependencies {
 	...
-	compile 'com.klinkerapps:giphy:2.1.1'
+	compile 'com.klinkerapps:giphy:2.1.2'
 }
 ```
 

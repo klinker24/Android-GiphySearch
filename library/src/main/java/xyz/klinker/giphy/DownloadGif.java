@@ -60,33 +60,32 @@ class DownloadGif extends AsyncTask<Void, Void, Uri> {
 
     @Override
     protected void onPostExecute(Uri downloadedTo) {
-        if (callback != null) {
-            callback.onGifSelected(downloadedTo);
-
-            try {
+        try {
+            if (callback != null) {
+                callback.onGifSelected(downloadedTo);
                 dialog.dismiss();
-            } catch (Exception e) {
-                Log.e("Exception", String.valueOf(e));
-            }
-        } else if (downloadedTo != null) {
-            activity.setResult(Activity.RESULT_OK, new Intent().setData(downloadedTo));
-            activity.finish();
-
-            try {
-                dialog.dismiss();
-            } catch (Exception e) {
-                Log.e("Exception", String.valueOf(e));
-            }
-        } else {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                Toast.makeText(activity, R.string.error_downloading_gif,
-                        Toast.LENGTH_SHORT).show();
+            } else if (downloadedTo != null) {
+                activity.setResult(Activity.RESULT_OK, new Intent().setData(downloadedTo));
                 activity.finish();
+
+                try {
+                    dialog.dismiss();
+                } catch (Exception e) {
+                    Log.e("Exception", String.valueOf(e));
+                }
             } else {
-                Toast.makeText(activity, R.string.error_downloading_gif_permission,
-                        Toast.LENGTH_SHORT).show();
-                activity.finish();
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    Toast.makeText(activity, R.string.error_downloading_gif,
+                            Toast.LENGTH_SHORT).show();
+                    activity.finish();
+                } else {
+                    Toast.makeText(activity, R.string.error_downloading_gif_permission,
+                            Toast.LENGTH_SHORT).show();
+                    activity.finish();
+                }
             }
+        } catch (IllegalStateException e) {
+            Log.e("Exception", String.valueOf(e));
         }
     }
 
